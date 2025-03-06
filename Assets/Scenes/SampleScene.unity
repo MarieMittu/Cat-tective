@@ -562,7 +562,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 116
+  m_Constraints: 112
   m_CollisionDetection: 0
 --- !u!114 &900706723
 MonoBehaviour:
@@ -584,8 +584,8 @@ MonoBehaviour:
   run_speed: 90
   rotate_speed: 60
   walking: 0
-  jump: {x: 0, y: 20, z: 0}
-  jumpForce: 50
+  jump: {x: 0, y: 2, z: 0}
+  jumpForce: 3
   isGrounded: 0
   playerTrans: {fileID: 900706721}
   cameraTrans: {fileID: 963194228}
@@ -678,13 +678,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.7, z: -2.6564493}
+  m_LocalRotation: {x: 0.13934763, y: -0, z: -0, w: 0.99024355}
+  m_LocalPosition: {x: 0, y: 1.97, z: -2.08}
   m_LocalScale: {x: 7.9012346, y: 11.482636, z: 4.540939}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 900706721}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 16.02, y: 0, z: 0}
 --- !u!1001 &1319326686
 PrefabInstance:
   m_ObjectHideFlags: 0
