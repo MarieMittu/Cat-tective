@@ -6,10 +6,17 @@ public class TutorialManager : MonoBehaviour
 {
     public static TutorialManager sharedInstance;
 
-    public GameObject[] tutorials;
+    public float standardDelay = 2f;
+    public float chilldDelay = 5f;
 
-    [HideInInspector]
-    public int currentIndex = 0;
+    public GameObject[] tutorials;
+    public GameObject climbMarker;
+    public GameObject sunMarker;
+    public GameObject sunTrigger;
+
+    [HideInInspector] public int currentIndex = 0;
+    [HideInInspector] public bool startClimbing = false;
+    [HideInInspector] public bool startChilling = false;
 
     private bool isSwitching = false;
 
@@ -31,22 +38,44 @@ public class TutorialManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.D))
         {
-            ShowNextTutorial(1);
+            ShowNextTutorial(1, standardDelay);
         }
 
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
-            ShowNextTutorial(2);
+            ShowNextTutorial(2, standardDelay);
         }
 
         if (Input.GetKeyDown(KeyCode.LeftControl) || Input.GetKeyDown(KeyCode.LeftCommand))
         {
-            ShowNextTutorial(3);
+            ShowNextTutorial(3, standardDelay);
         }
 
         if (Input.GetKeyDown(KeyCode.Space) && currentIndex == 3)
         {
-            ShowNextTutorial(3);
+            ShowNextTutorial(4, standardDelay);
+            climbMarker.SetActive(true);
+        }
+
+        if (startClimbing && currentIndex == 4)
+        {
+            ShowNextTutorial(5, standardDelay);
+            climbMarker.SetActive(false);
+            sunMarker.SetActive(true);
+            sunTrigger.SetActive(true);
+        }
+
+        if (startChilling)
+        {
+            if (currentIndex == 5)
+            {
+                ShowNextTutorial(6, standardDelay);
+                sunTrigger.SetActive(false);
+            } else if (currentIndex == 6)
+            {
+                ShowNextTutorial(7, chilldDelay);
+            }
+            
         }
     }
 
@@ -64,11 +93,11 @@ public class TutorialManager : MonoBehaviour
         isSwitching = false;
     }
 
-    private void ShowNextTutorial(int index)
+    private void ShowNextTutorial(int index, float delay)
     {
         if (currentIndex == index - 1 && !isSwitching)
         {
-            StartCoroutine(PrepareSwitch(index, 2f));
+            StartCoroutine(PrepareSwitch(index, delay));
         }
     }
 

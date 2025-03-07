@@ -14,6 +14,7 @@ public class CatMovement : MonoBehaviour
     public bool isGrounded;
     public bool isOnWall;
     private bool isClimbing = false;
+    private bool isSunDrunk = false;
 
     public Transform playerTrans;
     public Transform cameraTrans;
@@ -46,6 +47,7 @@ public class CatMovement : MonoBehaviour
 
                 playerRigid.AddForce(transform.up * walk_speed, ForceMode.Force);
                 isClimbing = true; // Set climbing flag to true
+                TutorialManager.sharedInstance.startClimbing = true;
             }
             else
             {
@@ -120,7 +122,14 @@ public class CatMovement : MonoBehaviour
         }
     }
 
-
+    private void OnTriggerEnter(Collider other)
+    {
+        isSunDrunk = true;
+        TutorialManager.sharedInstance.startChilling = true;
+        //trigger chill anim
+        playerAnim.SetTrigger("SitDown");
+        playerAnim.SetTrigger("Sitting");
+    }
 
     // Update is called once per frame
     void Update()
@@ -143,25 +152,31 @@ public class CatMovement : MonoBehaviour
         verticalRotation = Mathf.Clamp(verticalRotation, -verticalRotationLimit, verticalRotationLimit);
         cameraTrans.localRotation = Quaternion.Euler(verticalRotation, 0, 0);
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (!isSunDrunk)
         {
-            if (isGrounded)
+            if (Input.GetKeyDown(KeyCode.Space))
             {
-                playerRigid.velocity = new Vector3(playerRigid.velocity.x, 0, playerRigid.velocity.z);
-                playerRigid.AddForce(jump * jumpForce, ForceMode.Impulse);
-                isGrounded = false;
+                if (isGrounded)
+                {
+                    playerRigid.velocity = new Vector3(playerRigid.velocity.x, 0, playerRigid.velocity.z);
+                    playerRigid.AddForce(jump * jumpForce, ForceMode.Impulse);
+                    isGrounded = false;
+                }
+                else if (isOnWall)
+                {
+                    isOnWall = false;
+                    playerRigid.useGravity = true;
+                    playerRigid.AddForce(jumpOff * jumpForce, ForceMode.Impulse);
+                }
             }
-            else if (isOnWall)
-            {
-                isOnWall = false; 
-                playerRigid.useGravity = true; 
-                playerRigid.AddForce(jumpOff * jumpForce, ForceMode.Impulse); 
-            }
+
+
+            if (isGrounded) MoveOnGround();
+            if (isOnWall) MoveOnWall();
+        } else
+        {
+
         }
-
-
-        if (isGrounded) MoveOnGround();
-        if (isOnWall) MoveOnWall();
     }
 
     void MoveOnGround()
