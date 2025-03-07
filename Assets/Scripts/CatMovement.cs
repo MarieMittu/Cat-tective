@@ -9,8 +9,11 @@ public class CatMovement : MonoBehaviour
     public float walk_speed, walkback_speed, oldwalk_speed, run_speed, rotate_speed;
     public bool walking;
     public Vector3 jump;
+    public Vector3 jumpOff;
     public float jumpForce = 2.0f;
     public bool isGrounded;
+    public bool isOnWall;
+    private bool isClimbing = false;
 
     public Transform playerTrans;
     public Transform cameraTrans;
@@ -25,26 +28,99 @@ public class CatMovement : MonoBehaviour
     {
         playerRigid = GetComponent<Rigidbody>();
         jump = Vector3.up;
+        jumpOff = Vector3.down;
     }
 
     void FixedUpdate()
     {
         Vector3 velocity = playerRigid.velocity; // Preserve current velocity
 
-        if (Input.GetKey(KeyCode.W))
+        if (isOnWall)
         {
-            velocity.x = transform.forward.x * walk_speed * Time.deltaTime;
-            velocity.z = transform.forward.z * walk_speed * Time.deltaTime;
+            playerRigid.useGravity = false;
+
+            if (Input.GetKey(KeyCode.W))
+            {
+                velocity = new Vector3(velocity.x, 0, velocity.z); 
+                playerRigid.velocity = velocity;
+
+                playerRigid.AddForce(transform.up * walk_speed, ForceMode.Force);
+                isClimbing = true; // Set climbing flag to true
+            }
+            else
+            {
+                if (isClimbing)
+                {
+                    velocity = new Vector3(velocity.x, 0, velocity.z); 
+                    playerRigid.velocity = velocity; 
+                }
+                isClimbing = false; 
+            }
+        }
+        else
+        {
+            if (isGrounded)
+            {
+                if (Input.GetKey(KeyCode.W))
+                {
+                    velocity.x = transform.forward.x * walk_speed * Time.deltaTime;
+                    velocity.z = transform.forward.z * walk_speed * Time.deltaTime;
+                }
+            }
+
+            playerRigid.velocity = velocity;
+            playerRigid.useGravity = true; 
+        }
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (!isGrounded)
+        {
+            if (collision.gameObject.CompareTag("Climb"))
+            {
+               
+                isOnWall = true;
+                isGrounded = false; 
+                Debug.Log("Start climb");
+                
+                   
+            }
+        }
+    }
+
+    private void OnCollisionStay(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            isGrounded = true;
+            playerRigid.useGravity = true;
         }
 
-        playerRigid.velocity = velocity; // Apply velocity without resetting Y-axis
+        if (!isGrounded)
+        {
+            if (collision.gameObject.CompareTag("Climb"))
+            {
+                isOnWall = true;
+                isGrounded = false;
+                //playerRigid.useGravity = false;
+                Debug.Log("Is climbing");
+            }
+        }
     }
 
-
-    void OnCollisionStay()
+    void OnCollisionExit(Collision collision)
     {
-        isGrounded = true;
+        if (collision.gameObject.CompareTag("Climb"))
+        {
+            isOnWall = false;
+            isGrounded = false; 
+            playerRigid.useGravity = true; 
+            Debug.Log("Stop climb");
+        }
     }
+
+
 
     // Update is called once per frame
     void Update()
@@ -67,6 +143,29 @@ public class CatMovement : MonoBehaviour
         verticalRotation = Mathf.Clamp(verticalRotation, -verticalRotationLimit, verticalRotationLimit);
         cameraTrans.localRotation = Quaternion.Euler(verticalRotation, 0, 0);
 
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (isGrounded)
+            {
+                playerRigid.velocity = new Vector3(playerRigid.velocity.x, 0, playerRigid.velocity.z);
+                playerRigid.AddForce(jump * jumpForce, ForceMode.Impulse);
+                isGrounded = false;
+            }
+            else if (isOnWall)
+            {
+                isOnWall = false; 
+                playerRigid.useGravity = true; 
+                playerRigid.AddForce(jumpOff * jumpForce, ForceMode.Impulse); 
+            }
+        }
+
+
+        if (isGrounded) MoveOnGround();
+        if (isOnWall) MoveOnWall();
+    }
+
+    void MoveOnGround()
+    {
         if (Input.GetKeyDown(KeyCode.W))
         {
             playerAnim.SetTrigger("Walk");
@@ -120,12 +219,12 @@ public class CatMovement : MonoBehaviour
                 //playerAnim.SetTrigger("walk");
             }
         }
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
-        {
-            playerRigid.velocity = new Vector3(playerRigid.velocity.x, 0, playerRigid.velocity.z);
-            playerRigid.AddForce(jump * jumpForce, ForceMode.Impulse);
-            isGrounded = false;
-        }
-
+        
     }
+
+    void MoveOnWall()
+    {
+       
+    }
+
 }
