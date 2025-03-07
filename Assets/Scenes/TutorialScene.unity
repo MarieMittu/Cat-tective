@@ -1642,16 +1642,18 @@ MonoBehaviour:
   rotate_speed: 60
   walking: 0
   jump: {x: 0, y: 2, z: 0}
-  jumpOff: {x: 0, y: 0, z: 0}
+  jumpOff: {x: 0, y: 2, z: 0}
   jumpForce: 3
   isGrounded: 0
   isOnWall: 0
+  soberSpot: {fileID: 0}
   playerTrans: {fileID: 900706721}
   cameraTrans: {fileID: 963194228}
   cameraPivot: {fileID: 900706721}
   mouseSensitivity: 2
   verticalRotationLimit: 80
   cameraResetSpeed: 5
+  soberUpTime: 3
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -2632,6 +2634,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c526a7ace6fe4640aa687e73c99b21e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  standardDelay: 2
+  chilldDelay: 5
   tutorials:
   - {fileID: 777749470}
   - {fileID: 78518017}

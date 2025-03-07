@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,6 +16,7 @@ public class CatMovement : MonoBehaviour
     public bool isOnWall;
     private bool isClimbing = false;
     private bool isSunDrunk = false;
+    public Transform soberSpot;
 
     public Transform playerTrans;
     public Transform cameraTrans;
@@ -25,11 +27,21 @@ public class CatMovement : MonoBehaviour
     private float verticalRotation = 0f;
     public float cameraResetSpeed = 5f;
 
+    private DateTime lastKeyPressTime;
+    private TimeSpan timeBetweenKeyPresses;
+    private bool chainStarted = false;
+    public float soberUpTime = 5f;
+    private float initialSoberTime;
+    private float timeToRecover = 0.5f;
+    private float timeSinceLastPress = 0f;
+    private float keyPressThreshold = 0.2f;
+
     void Start()
     {
         playerRigid = GetComponent<Rigidbody>();
         jump = Vector3.up;
         jumpOff = Vector3.down;
+        initialSoberTime = soberUpTime;
     }
 
     void FixedUpdate()
@@ -63,11 +75,15 @@ public class CatMovement : MonoBehaviour
         {
             if (isGrounded)
             {
-                if (Input.GetKey(KeyCode.W))
+                if (!isSunDrunk)
                 {
-                    velocity.x = transform.forward.x * walk_speed * Time.deltaTime;
-                    velocity.z = transform.forward.z * walk_speed * Time.deltaTime;
+                    if (Input.GetKey(KeyCode.W))
+                    {
+                        velocity.x = transform.forward.x * walk_speed * Time.deltaTime;
+                        velocity.z = transform.forward.z * walk_speed * Time.deltaTime;
+                    }
                 }
+                
             }
 
             playerRigid.velocity = velocity;
@@ -175,7 +191,51 @@ public class CatMovement : MonoBehaviour
             if (isOnWall) MoveOnWall();
         } else
         {
+            if (Input.GetKeyDown(KeyCode.Space)) 
+            {
+                if (!chainStarted)
+                {
+                    lastKeyPressTime = DateTime.Now;
+                    chainStarted = true;
+                    timeSinceLastPress = 0f; 
+                }
+                else
+                {
+                    TimeSpan timeBetweenPresses = DateTime.Now - lastKeyPressTime;
+                    if (timeBetweenPresses.TotalSeconds < keyPressThreshold)
+                    {
+                        soberUpTime -= 0.2f; 
+                        soberUpTime = Mathf.Max(soberUpTime, 0f); 
+                    }
 
+                    lastKeyPressTime = DateTime.Now;
+                }
+            }
+            else
+            {
+                timeSinceLastPress += Time.deltaTime;
+
+                if (timeSinceLastPress > timeToRecover)
+                {
+                    soberUpTime += Time.deltaTime * 0.2f; 
+                    soberUpTime = Mathf.Min(soberUpTime, initialSoberTime); 
+                }
+
+                if (timeSinceLastPress > 2f)
+                {
+                    chainStarted = false;
+                }
+            }
+
+            if (soberUpTime <= 0)
+            {
+                playerAnim.SetTrigger("StandUp");
+                playerAnim.SetTrigger("Idle");
+                isSunDrunk = false;
+            }
+
+            Debug.Log("soberUpTime: " + soberUpTime);
+          
         }
     }
 
