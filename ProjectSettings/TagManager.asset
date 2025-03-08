@@ -10,14 +10,15 @@ TagManager:
   - Play
   - Snake
   - Search
+  - Top
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Overlay
   - Water
   - UI
-  - 
+  - VaultLayer
   - 
   - 
   - 

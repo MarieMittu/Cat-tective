@@ -12,6 +12,7 @@ public class CatMovement : MonoBehaviour
     public Vector3 jump;
     public Vector3 jumpOff;
     public Vector3 jumpBack;
+    public Vector3 jumpForward;
     public float jumpForce = 2.0f;
     public bool isGrounded;
     public bool isOnWall;
@@ -24,6 +25,11 @@ public class CatMovement : MonoBehaviour
     public Transform playerTrans;
     public Transform cameraTrans;
     public Transform cameraPivot;
+
+    private int vaultLayer;
+    public Camera catMainCam;
+    private float catHeight = 2.5f;
+    private float catRadius = 0.5f;
 
     public float mouseSensitivity = 2.0f;
     public float verticalRotationLimit = 80f;
@@ -44,9 +50,12 @@ public class CatMovement : MonoBehaviour
     void Start()
     {
         playerRigid = GetComponent<Rigidbody>();
+        vaultLayer = LayerMask.NameToLayer("VaultLayer");
+        vaultLayer = ~vaultLayer;
         jump = Vector3.up;
         jumpOff = Vector3.down;
         jumpBack = Vector3.back;
+        jumpForward = Vector3.forward;
         initialSoberTime = soberUpTime;
         initialBeSeriousTime = beSeriousTime;
     }
@@ -112,6 +121,15 @@ public class CatMovement : MonoBehaviour
                    
             }
         }
+
+        if (collision.gameObject.CompareTag("Top"))
+        {
+            
+            
+            isGrounded = true;
+            playerRigid.useGravity = true;
+
+        }
     }
 
     private void OnCollisionStay(Collision collision)
@@ -147,6 +165,11 @@ public class CatMovement : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if (other.gameObject.CompareTag("Top"))
+        {
+            Vault();
+        }
+
         if (other.gameObject.CompareTag("Sun"))
         {
             isSunDrunk = true;
@@ -194,6 +217,31 @@ public class CatMovement : MonoBehaviour
             isScared = false;
             TutorialManager.sharedInstance.isScared = false;
 
+        }
+    }
+
+    private IEnumerator LerpVault(Vector3 targetPos, float duration)
+    {
+        float time = 0;
+        Vector3 startPos = transform.position;
+
+        while (time < duration)
+        {
+            transform.position = Vector3.Lerp(startPos, targetPos, time / duration);
+            time += Time.deltaTime;
+            yield return null;
+        }
+        transform.position = targetPos;
+    }
+
+    private void Vault()
+    {
+        if (Physics.Raycast(catMainCam.transform.position, catMainCam.transform.forward, out var firstHit, 1f, vaultLayer))
+        {
+            if (Physics.Raycast(firstHit.point + (catMainCam.transform.forward * catRadius * 0.25f) + (Vector3.up * 0.1f * catHeight), Vector3.down, out var secondHit, catHeight))
+            {
+                StartCoroutine(LerpVault(secondHit.point, 1.0f));
+            }
         }
     }
 
