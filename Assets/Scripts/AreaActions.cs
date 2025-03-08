@@ -9,6 +9,7 @@ public class AreaActions : MonoBehaviour
     public Camera catCamera;
     public GameObject catsBody;
     public GameObject closeBtn;
+    [HideInInspector] public bool isDisplayed;
 
     // Start is called before the first frame update
     void Start()
@@ -24,6 +25,7 @@ public class AreaActions : MonoBehaviour
 
     public void ActivateView()
     {
+        isDisplayed = true;
         subCamera.enabled = true;
         catCamera.enabled = false;
         catsBody.SetActive(false);
@@ -35,6 +37,7 @@ public class AreaActions : MonoBehaviour
 
     public void DeactivateView()
     {
+        isDisplayed = false;
         subCamera.enabled = false;
         catCamera.enabled = true;
         catsBody.SetActive(true);

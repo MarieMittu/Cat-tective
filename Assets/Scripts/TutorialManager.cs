@@ -20,6 +20,8 @@ public class TutorialManager : MonoBehaviour
     public GameObject cucumber;
     public GameObject investigationMarker;
     public GameObject investigationArea;
+    public GameObject closetMarker;
+    public GameObject closetTrigger;
 
     [HideInInspector] public int currentIndex = 0;
     [HideInInspector] public bool startClimbing = false;
@@ -27,6 +29,7 @@ public class TutorialManager : MonoBehaviour
     [HideInInspector] public bool startPlaying = false;
     [HideInInspector] public bool isScared = false;
     [HideInInspector] public bool isSearching = false;
+    [HideInInspector] public bool foundWatch = false;
 
     private bool isSwitching = false;
 
@@ -136,6 +139,24 @@ public class TutorialManager : MonoBehaviour
             ShowNextTutorial(14, standardDelay);
             investigationMarker.SetActive(true); //add to the marker img text press E
             investigationArea.SetActive(true);
+        }
+
+        if (currentIndex == 14 && isSearching) // change condition to solving puzzle
+        {
+            ShowNextTutorial(15, standardDelay);
+        }
+
+        AreaActions areaScript = investigationArea.GetComponent<AreaActions>();
+        if (currentIndex == 15 && !areaScript.isDisplayed)
+        {
+            ShowNextTutorial(16, standardDelay);
+            closetMarker.SetActive(true);
+            closetTrigger.SetActive(true);
+        }
+
+        if (foundWatch)
+        {
+            FindObjectOfType<ScenesController>().ShowTimeTravelScene();
         }
     }
 

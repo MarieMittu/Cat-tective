@@ -11,6 +11,7 @@ TagManager:
   - Snake
   - Search
   - Top
+  - Closet
   layers:
   - Default
   - TransparentFX

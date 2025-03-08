@@ -203,6 +203,11 @@ public class CatMovement : MonoBehaviour
         {
             readyToInvestigate = true;
         }
+
+        if (other.gameObject.CompareTag("Closet"))
+        {
+            TutorialManager.sharedInstance.foundWatch = true;
+        }
     }
 
     private void OnTriggerExit(Collider other)
@@ -302,6 +307,7 @@ public class CatMovement : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.E))
             {
                 isInvestigating = true;
+                TutorialManager.sharedInstance.isSearching = true;
                 AreaActions areaScript = investigationArea.GetComponent<AreaActions>();
                 areaScript.ActivateView();
             }
