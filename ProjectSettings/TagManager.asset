@@ -7,6 +7,7 @@ TagManager:
   - Ground
   - Climb
   - Sun
+  - Play
   layers:
   - Default
   - TransparentFX

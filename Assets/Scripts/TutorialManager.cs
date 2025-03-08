@@ -13,10 +13,12 @@ public class TutorialManager : MonoBehaviour
     public GameObject climbMarker;
     public GameObject sunMarker;
     public GameObject sunTrigger;
+    public GameObject playMarker;
 
     [HideInInspector] public int currentIndex = 0;
     [HideInInspector] public bool startClimbing = false;
     [HideInInspector] public bool startChilling = false;
+    [HideInInspector] public bool startPlaying = false;
 
     private bool isSwitching = false;
 
@@ -70,12 +72,37 @@ public class TutorialManager : MonoBehaviour
             if (currentIndex == 5)
             {
                 ShowNextTutorial(6, standardDelay);
-                sunTrigger.SetActive(false);
+                sunMarker.SetActive(false);
             } else if (currentIndex == 6)
             {
                 ShowNextTutorial(7, chilldDelay);
             }
-            
+        } else
+        {
+            if (currentIndex == 7)
+            {
+                ShowNextTutorial(8, standardDelay);
+                playMarker.SetActive(true);
+            }
+        }
+
+        if (startPlaying)
+        {
+            if (currentIndex == 8)
+            {
+                ShowNextTutorial(9, standardDelay);
+                playMarker.SetActive(false);
+            }
+            else if (currentIndex == 9)
+            {
+                ShowNextTutorial(10, chilldDelay);
+            }
+        } else
+        {
+            if (currentIndex == 10)
+            {
+                ShowNextTutorial(11, standardDelay);
+            }
         }
     }
 

@@ -16,7 +16,7 @@ public class CatMovement : MonoBehaviour
     public bool isOnWall;
     private bool isClimbing = false;
     private bool isSunDrunk = false;
-    public Transform soberSpot;
+    private bool isPlaying = false;
 
     public Transform playerTrans;
     public Transform cameraTrans;
@@ -35,6 +35,8 @@ public class CatMovement : MonoBehaviour
     private float timeToRecover = 0.5f;
     private float timeSinceLastPress = 0f;
     private float keyPressThreshold = 0.2f;
+    public float beSeriousTime = 5f;
+    private float initialBeSeriousTime;
 
     void Start()
     {
@@ -42,6 +44,7 @@ public class CatMovement : MonoBehaviour
         jump = Vector3.up;
         jumpOff = Vector3.down;
         initialSoberTime = soberUpTime;
+        initialBeSeriousTime = beSeriousTime;
     }
 
     void FixedUpdate()
@@ -75,7 +78,7 @@ public class CatMovement : MonoBehaviour
         {
             if (isGrounded)
             {
-                if (!isSunDrunk)
+                if (!isSunDrunk && !isPlaying)
                 {
                     if (Input.GetKey(KeyCode.W))
                     {
@@ -140,11 +143,43 @@ public class CatMovement : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        isSunDrunk = true;
-        TutorialManager.sharedInstance.startChilling = true;
-        //trigger chill anim
-        playerAnim.SetTrigger("SitDown");
-        playerAnim.SetTrigger("Sitting");
+        if (other.gameObject.CompareTag("Sun"))
+        {
+            isSunDrunk = true;
+            TutorialManager.sharedInstance.startChilling = true;
+            //trigger chill anim
+            playerAnim.SetTrigger("SitDown");
+            playerAnim.SetTrigger("Sitting");
+        }
+
+        if (other.gameObject.CompareTag("Play"))
+        {
+            isPlaying = true;
+            other.gameObject.SetActive(false);
+            TutorialManager.sharedInstance.startPlaying = true;
+            //trigger play anim
+            playerAnim.SetTrigger("SitDown");
+            playerAnim.SetTrigger("Sitting");
+        }
+
+
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.CompareTag("Sun"))
+        {
+            isSunDrunk = false;
+            TutorialManager.sharedInstance.startChilling = false;
+            soberUpTime = initialSoberTime;
+        }
+        if (other.gameObject.CompareTag("Play"))
+        {
+            isPlaying = false;
+            other.gameObject.SetActive(true);
+            TutorialManager.sharedInstance.startPlaying = false;
+            beSeriousTime = initialBeSeriousTime;
+        }
     }
 
     // Update is called once per frame
@@ -168,7 +203,7 @@ public class CatMovement : MonoBehaviour
         verticalRotation = Mathf.Clamp(verticalRotation, -verticalRotationLimit, verticalRotationLimit);
         cameraTrans.localRotation = Quaternion.Euler(verticalRotation, 0, 0);
 
-        if (!isSunDrunk)
+        if (!isSunDrunk && !isPlaying)
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
@@ -189,53 +224,12 @@ public class CatMovement : MonoBehaviour
 
             if (isGrounded) MoveOnGround();
             if (isOnWall) MoveOnWall();
-        } else
+        } else if (isSunDrunk)
         {
-            if (Input.GetKeyDown(KeyCode.Space)) 
-            {
-                if (!chainStarted)
-                {
-                    lastKeyPressTime = DateTime.Now;
-                    chainStarted = true;
-                    timeSinceLastPress = 0f; 
-                }
-                else
-                {
-                    TimeSpan timeBetweenPresses = DateTime.Now - lastKeyPressTime;
-                    if (timeBetweenPresses.TotalSeconds < keyPressThreshold)
-                    {
-                        soberUpTime -= 0.2f; 
-                        soberUpTime = Mathf.Max(soberUpTime, 0f); 
-                    }
-
-                    lastKeyPressTime = DateTime.Now;
-                }
-            }
-            else
-            {
-                timeSinceLastPress += Time.deltaTime;
-
-                if (timeSinceLastPress > timeToRecover)
-                {
-                    soberUpTime += Time.deltaTime * 0.2f; 
-                    soberUpTime = Mathf.Min(soberUpTime, initialSoberTime); 
-                }
-
-                if (timeSinceLastPress > 2f)
-                {
-                    chainStarted = false;
-                }
-            }
-
-            if (soberUpTime <= 0)
-            {
-                playerAnim.SetTrigger("StandUp");
-                playerAnim.SetTrigger("Idle");
-                isSunDrunk = false;
-            }
-
-            Debug.Log("soberUpTime: " + soberUpTime);
-          
+            ReturnToNormalState(ref soberUpTime, initialSoberTime, ref isSunDrunk, () => SoberUp());
+        } else if (isPlaying)
+        {
+            ReturnToNormalState(ref beSeriousTime, initialBeSeriousTime, ref isPlaying, () => BecomeSerious());
         }
     }
 
@@ -293,6 +287,15 @@ public class CatMovement : MonoBehaviour
                 //playerAnim.ResetTrigger("run");
                 //playerAnim.SetTrigger("walk");
             }
+
+            if (Input.GetKeyDown(KeyCode.LeftControl) || Input.GetKeyDown(KeyCode.LeftCommand))
+            {
+                walk_speed = walk_speed / 2;
+            }
+            if (Input.GetKeyUp(KeyCode.LeftControl) || Input.GetKeyUp(KeyCode.LeftCommand))
+            {
+                walk_speed = oldwalk_speed;
+            }
         }
         
     }
@@ -302,4 +305,59 @@ public class CatMovement : MonoBehaviour
        
     }
 
+    private void ReturnToNormalState(ref float timer, float initialTimer, ref bool state, Action onZero)
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (!chainStarted)
+            {
+                lastKeyPressTime = DateTime.Now;
+                chainStarted = true;
+                timeSinceLastPress = 0f;
+            }
+            else
+            {
+                TimeSpan timeBetweenPresses = DateTime.Now - lastKeyPressTime;
+                if (timeBetweenPresses.TotalSeconds < 0.2f) // Rapid press threshold
+                {
+                    timer -= 0.2f;
+                    timer = Mathf.Max(timer, 0f);
+                }
+                lastKeyPressTime = DateTime.Now;
+            }
+        }
+        else
+        {
+            timeSinceLastPress += Time.deltaTime;
+
+            if (timeSinceLastPress > 0.5f) // Recovery start time
+            {
+                timer += Time.deltaTime * 0.2f;
+                timer = Mathf.Min(timer, initialTimer);
+            }
+
+            if (timeSinceLastPress > 2f)
+            {
+                chainStarted = false;
+            }
+        }
+
+        if (timer <= 0)
+        {
+            onZero?.Invoke(); // Trigger event when timer hits zero
+            state = false;
+        }
+    }
+
+    void SoberUp()
+    {
+        playerAnim.SetTrigger("StandUp");
+        playerAnim.SetTrigger("Idle");
+    }
+
+    void BecomeSerious()
+    {
+        playerAnim.SetTrigger("StandUp");
+        playerAnim.SetTrigger("Idle");
+    }
 }
