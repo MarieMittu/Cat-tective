@@ -11,12 +11,15 @@ public class CatMovement : MonoBehaviour
     public bool walking;
     public Vector3 jump;
     public Vector3 jumpOff;
+    public Vector3 jumpBack;
     public float jumpForce = 2.0f;
     public bool isGrounded;
     public bool isOnWall;
     private bool isClimbing = false;
     private bool isSunDrunk = false;
     private bool isPlaying = false;
+    private bool isScared = false;
+    private bool readyToInvestigate = false;
 
     public Transform playerTrans;
     public Transform cameraTrans;
@@ -43,6 +46,7 @@ public class CatMovement : MonoBehaviour
         playerRigid = GetComponent<Rigidbody>();
         jump = Vector3.up;
         jumpOff = Vector3.down;
+        jumpBack = Vector3.back;
         initialSoberTime = soberUpTime;
         initialBeSeriousTime = beSeriousTime;
     }
@@ -78,7 +82,7 @@ public class CatMovement : MonoBehaviour
         {
             if (isGrounded)
             {
-                if (!isSunDrunk && !isPlaying)
+                if (!isSunDrunk && !isPlaying && !isScared)
                 {
                     if (Input.GetKey(KeyCode.W))
                     {
@@ -155,14 +159,25 @@ public class CatMovement : MonoBehaviour
         if (other.gameObject.CompareTag("Play"))
         {
             isPlaying = true;
-            other.gameObject.SetActive(false);
+            //other.gameObject.SetActive(false);
             TutorialManager.sharedInstance.startPlaying = true;
             //trigger play anim
             playerAnim.SetTrigger("SitDown");
             playerAnim.SetTrigger("Sitting");
         }
 
+        if (other.gameObject.CompareTag("Snake"))
+        {
+            isScared = true;
+            TutorialManager.sharedInstance.isScared = true;
+            playerRigid.AddForce(jump * jumpForce, ForceMode.Impulse);
+            playerRigid.AddForce(jumpBack * jumpForce, ForceMode.Impulse);
+        }
 
+        if (other.gameObject.CompareTag("Search"))
+        {
+            readyToInvestigate = true;
+        }
     }
 
     private void OnTriggerExit(Collider other)
@@ -173,12 +188,12 @@ public class CatMovement : MonoBehaviour
             TutorialManager.sharedInstance.startChilling = false;
             soberUpTime = initialSoberTime;
         }
-        if (other.gameObject.CompareTag("Play"))
+       
+        if (other.gameObject.CompareTag("Snake"))
         {
-            isPlaying = false;
-            other.gameObject.SetActive(true);
-            TutorialManager.sharedInstance.startPlaying = false;
-            beSeriousTime = initialBeSeriousTime;
+            isScared = false;
+            TutorialManager.sharedInstance.isScared = false;
+
         }
     }
 
@@ -230,6 +245,14 @@ public class CatMovement : MonoBehaviour
         } else if (isPlaying)
         {
             ReturnToNormalState(ref beSeriousTime, initialBeSeriousTime, ref isPlaying, () => BecomeSerious());
+        }
+
+        if (readyToInvestigate)
+        {
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                //open investig view
+            }
         }
     }
 
@@ -359,5 +382,9 @@ public class CatMovement : MonoBehaviour
     {
         playerAnim.SetTrigger("StandUp");
         playerAnim.SetTrigger("Idle");
+        isPlaying = false;
+        
+        TutorialManager.sharedInstance.startPlaying = false;
+        beSeriousTime = initialBeSeriousTime;
     }
 }

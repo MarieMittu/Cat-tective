@@ -8,6 +8,8 @@ TagManager:
   - Climb
   - Sun
   - Play
+  - Snake
+  - Search
   layers:
   - Default
   - TransparentFX
