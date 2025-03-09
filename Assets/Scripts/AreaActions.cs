@@ -11,6 +11,8 @@ public class AreaActions : MonoBehaviour
     public GameObject closeBtn;
     [HideInInspector] public bool isDisplayed;
 
+    public GameObject[] evidences;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -21,6 +23,28 @@ public class AreaActions : MonoBehaviour
     void Update()
     {
         
+    }
+
+    private void OnMouseOver()
+    {
+        foreach (GameObject evidence in evidences)
+        {
+            if (evidence.transform.childCount > 0)
+            {
+                evidence.transform.GetChild(0).gameObject.SetActive(true); 
+            }
+        }
+    }
+
+    private void OnMouseExit()
+    {
+        foreach (GameObject evidence in evidences)
+        {
+            if (evidence.transform.childCount > 0)
+            {
+                evidence.transform.GetChild(0).gameObject.SetActive(false);
+            }
+        }
     }
 
     public void ActivateView()

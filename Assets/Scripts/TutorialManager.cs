@@ -135,20 +135,23 @@ public class TutorialManager : MonoBehaviour
             }
         }
 
+        AreaActions areaScript = investigationArea.GetComponent<AreaActions>();
+
         if (currentIndex == 13)
         {
             ShowNextTutorial(14, standardDelay);
             investigationMarker.SetActive(true); //add to the marker img text press E
             investigationArea.SetActive(true);
             photoPart.SetActive(true);
+            areaScript.closeBtn.SetActive(false);
         }
 
         if (currentIndex == 14 && isSearching) // change condition to solving puzzle
         {
+            //areaScript.closeBtn.SetActive(true); //for later tutorial
             ShowNextTutorial(15, standardDelay);
         }
 
-        AreaActions areaScript = investigationArea.GetComponent<AreaActions>();
         if (currentIndex == 15 && !areaScript.isDisplayed)
         {
             ShowNextTutorial(16, standardDelay);
