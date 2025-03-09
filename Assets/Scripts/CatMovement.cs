@@ -245,16 +245,22 @@ public class CatMovement : MonoBehaviour
 
         gizmoTargetPos = targetPos;
         showGizmo = true;
-
+        Debug.Log("START LERP");
         while (time < duration)
         {
             transform.position = Vector3.Lerp(startPos, targetPos, time / duration);
             time += Time.deltaTime;
             yield return null;
         }
+        Debug.Log("FINISH LERP");
         transform.position = targetPos;
-        playerRigid.isKinematic = false;
+        Invoke("UndoKinematic", 2f);
         //showGizmo = false;
+    }
+
+    private void UndoKinematic()
+    {
+        playerRigid.isKinematic = false;
     }
 
     private void Vault()
