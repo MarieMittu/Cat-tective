@@ -21,6 +21,8 @@ public class TutorialManager : MonoBehaviour
     public GameObject investigationMarker;
     public GameObject investigationArea;
     public GameObject photoPart;
+    public GameObject tableSearchArea;
+    public GameObject tableSearchMarker;
     public GameObject closetMarker;
     public GameObject closetTrigger;
 
@@ -146,21 +148,54 @@ public class TutorialManager : MonoBehaviour
             
         }
 
-        if (currentIndex == 14 && isSearching) // change condition to solving puzzle
+        if (currentIndex == 14 && isSearching) 
         {
-            //areaScript.closeBtn.SetActive(true); //for later tutorial
             areaScript.closeBtn.SetActive(false);
             ShowNextTutorial(15, standardDelay);
+            investigationMarker.SetActive(false);
         }
 
-        if (currentIndex == 15 && !areaScript.isDisplayed)
+        if (currentIndex == 15 && areaScript.pickedEvidence)
         {
             ShowNextTutorial(16, standardDelay);
-            closetMarker.SetActive(true);
-            closetTrigger.SetActive(true);
+            areaScript.closeBtn.SetActive(true);
         }
 
-        if (foundWatch)
+        
+
+        if (!areaScript.isDisplayed && currentIndex == 16)
+        {
+            isSearching = false;
+            ShowNextTutorial(17, standardDelay);
+            tableSearchArea.SetActive(true);
+            tableSearchMarker.SetActive(true);
+
+            //FOR THE VERY LAST
+            //ShowNextTutorial(16, standardDelay);
+            //closetMarker.SetActive(true);
+            //closetTrigger.SetActive(true);
+        }
+
+        AreaActions tableAreaScript = tableSearchArea.GetComponent<AreaActions>();
+
+        if (currentIndex == 17 && isSearching) 
+        {
+            tableAreaScript.closeBtn.SetActive(false);
+            ShowNextTutorial(18, standardDelay);
+        }
+
+        if (currentIndex == 18 && tableAreaScript.pickedEvidence)
+        {
+            ShowNextTutorial(19, standardDelay);
+            tableAreaScript.closeBtn.SetActive(true);
+        }
+
+        if (currentIndex == 19 && !tableAreaScript.isDisplayed)
+        {
+            ShowNextTutorial(20, standardDelay);
+        }
+
+            if (foundWatch)
         {
             FindObjectOfType<ScenesController>().ShowTimeTravelScene();
         }

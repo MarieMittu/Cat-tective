@@ -10,8 +10,10 @@ public class AreaActions : MonoBehaviour
     public GameObject catsBody;
     public GameObject closeBtn;
     [HideInInspector] public bool isDisplayed;
+    [HideInInspector] public bool pickedEvidence;
 
     public GameObject[] evidences;
+    private GameObject currentEvidence;
 
     // Start is called before the first frame update
     void Start()
@@ -22,37 +24,74 @@ public class AreaActions : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
-    }
-
-    private void OnMouseOver()
-    {
-        foreach (GameObject evidence in evidences)
+        if (isDisplayed) 
         {
-            if (evidence.transform.childCount > 0)
-            {
-                evidence.transform.GetChild(0).gameObject.SetActive(true);
-                if (Input.GetMouseButtonDown(0))
-                {
-                    evidence.transform.GetChild(1).gameObject.SetActive(true);
-                }
-
-                if (Input.GetMouseButtonDown(1))
-                {
-                    evidence.SetActive(false);
-                }
-            }
+            DetectMouseOverEvidence();
         }
     }
 
-    private void OnMouseExit()
+    private void DetectMouseOverEvidence()
     {
-        foreach (GameObject evidence in evidences)
+        Ray ray = subCamera.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit))
         {
-            foreach (Transform child in evidence.transform)
+            foreach (GameObject evidence in evidences)
             {
-                child.gameObject.SetActive(false);
+                if (hit.collider.gameObject == evidence)
+                {
+                    HandleEvidenceHover(evidence);
+                    return; 
+                }
             }
+        }
+
+        if (currentEvidence != null)
+        {
+            ResetEvidence(currentEvidence);
+            currentEvidence = null;
+        }
+    }
+
+    private void HandleEvidenceHover(GameObject evidence)
+    {
+        if (currentEvidence != evidence)
+        {
+            if (currentEvidence != null)
+            {
+                ResetEvidence(currentEvidence);
+            }
+
+            if (evidence.transform.childCount > 0)
+            {
+                evidence.transform.GetChild(0).gameObject.SetActive(true);
+            }
+
+            currentEvidence = evidence;
+        }
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (evidence.transform.childCount > 1)
+            {
+                evidence.transform.GetChild(1).gameObject.SetActive(true);
+            }
+        }
+
+        if (Input.GetMouseButtonDown(1))
+        {
+            evidence.SetActive(false);
+            pickedEvidence = true;
+        }
+    }
+    
+
+    private void ResetEvidence(GameObject evidence)
+    {
+        foreach (Transform child in evidence.transform)
+        {
+            child.gameObject.SetActive(false);
         }
     }
 

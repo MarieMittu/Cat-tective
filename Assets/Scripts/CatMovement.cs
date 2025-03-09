@@ -22,7 +22,7 @@ public class CatMovement : MonoBehaviour
     private bool isScared = false;
     private bool readyToInvestigate = false;
     private bool isInvestigating = false;
-    public GameObject investigationArea;
+    private GameObject currentInvestigationArea;
 
     public Transform playerTrans;
     public Transform cameraTrans;
@@ -54,6 +54,7 @@ public class CatMovement : MonoBehaviour
 
     void Start()
     {
+        Cursor.lockState = CursorLockMode.Locked;
         playerRigid = GetComponent<Rigidbody>();
         vaultLayer = LayerMask.NameToLayer("VaultLayer");
         vaultLayer = ~vaultLayer;
@@ -217,6 +218,7 @@ public class CatMovement : MonoBehaviour
         if (other.gameObject.CompareTag("Search"))
         {
             readyToInvestigate = true;
+            currentInvestigationArea = other.gameObject;
         }
 
         if (other.gameObject.CompareTag("Closet"))
@@ -239,6 +241,12 @@ public class CatMovement : MonoBehaviour
             isScared = false;
             TutorialManager.sharedInstance.isScared = false;
 
+        }
+
+        if (other.gameObject.CompareTag("Search"))
+        {
+            readyToInvestigate = false;
+            currentInvestigationArea = null; 
         }
     }
 
@@ -341,14 +349,17 @@ public class CatMovement : MonoBehaviour
             ReturnToNormalState(ref beSeriousTime, initialBeSeriousTime, ref isPlaying, () => BecomeSerious());
         }
 
-        if (readyToInvestigate)
+        if (readyToInvestigate && currentInvestigationArea != null)
         {
             if (Input.GetKeyDown(KeyCode.E))
             {
                 isInvestigating = true;
                 TutorialManager.sharedInstance.isSearching = true;
-                AreaActions areaScript = investigationArea.GetComponent<AreaActions>();
-                areaScript.ActivateView();
+                AreaActions areaScript = currentInvestigationArea.GetComponent<AreaActions>();
+                if (areaScript != null)
+                {
+                    areaScript.ActivateView();
+                }
             }
         }
 
