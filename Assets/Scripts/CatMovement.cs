@@ -49,6 +49,9 @@ public class CatMovement : MonoBehaviour
     public float beSeriousTime = 5f;
     private float initialBeSeriousTime;
 
+    private Vector3 gizmoTargetPos;
+    private bool showGizmo = false;
+
     void Start()
     {
         playerRigid = GetComponent<Rigidbody>();
@@ -130,7 +133,7 @@ public class CatMovement : MonoBehaviour
             }
         }
 
-        if (collision.gameObject.CompareTag("Top"))
+        if (collision.gameObject.CompareTag("Ground"))
         {
             
             
@@ -238,6 +241,10 @@ public class CatMovement : MonoBehaviour
     {
         float time = 0;
         Vector3 startPos = transform.position;
+        playerRigid.isKinematic = true;
+
+        gizmoTargetPos = targetPos;
+        showGizmo = true;
 
         while (time < duration)
         {
@@ -246,20 +253,30 @@ public class CatMovement : MonoBehaviour
             yield return null;
         }
         transform.position = targetPos;
+        playerRigid.isKinematic = false;
+        //showGizmo = false;
     }
 
     private void Vault()
     {
         if (Physics.Raycast(catMainCam.transform.position, catMainCam.transform.forward, out var firstHit, 1f, vaultLayer))
         {
-            if (Physics.Raycast(firstHit.point + (catMainCam.transform.forward * catRadius * 0.25f) + (Vector3.up * 0.1f * catHeight), Vector3.down, out var secondHit, catHeight))
+            if (Physics.Raycast(firstHit.point + (catMainCam.transform.forward * catRadius * 0.5f) + (Vector3.up * 0.1f * catHeight), Vector3.down, out var secondHit, catHeight))
             {
                 StartCoroutine(LerpVault(secondHit.point, 1.0f));
             }
         }
     }
 
-   
+    private void OnDrawGizmos()
+    {
+        if (showGizmo)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawSphere(gizmoTargetPos, 0.02f); // Draw a small sphere at the target position
+            Gizmos.DrawLine(transform.position, gizmoTargetPos); // Draw a line from the current position to target
+        }
+    }
 
 
 
