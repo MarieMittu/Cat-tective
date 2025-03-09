@@ -31,7 +31,16 @@ public class AreaActions : MonoBehaviour
         {
             if (evidence.transform.childCount > 0)
             {
-                evidence.transform.GetChild(0).gameObject.SetActive(true); 
+                evidence.transform.GetChild(0).gameObject.SetActive(true);
+                if (Input.GetMouseButtonDown(0))
+                {
+                    evidence.transform.GetChild(1).gameObject.SetActive(true);
+                }
+
+                if (Input.GetMouseButtonDown(1))
+                {
+                    evidence.SetActive(false);
+                }
             }
         }
     }
@@ -40,9 +49,9 @@ public class AreaActions : MonoBehaviour
     {
         foreach (GameObject evidence in evidences)
         {
-            if (evidence.transform.childCount > 0)
+            foreach (Transform child in evidence.transform)
             {
-                evidence.transform.GetChild(0).gameObject.SetActive(false);
+                child.gameObject.SetActive(false);
             }
         }
     }
