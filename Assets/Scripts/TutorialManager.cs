@@ -20,6 +20,7 @@ public class TutorialManager : MonoBehaviour
     public GameObject cucumber;
     public GameObject investigationMarker;
     public GameObject investigationArea;
+    public GameObject photoPart;
     public GameObject closetMarker;
     public GameObject closetTrigger;
 
@@ -139,6 +140,7 @@ public class TutorialManager : MonoBehaviour
             ShowNextTutorial(14, standardDelay);
             investigationMarker.SetActive(true); //add to the marker img text press E
             investigationArea.SetActive(true);
+            photoPart.SetActive(true);
         }
 
         if (currentIndex == 14 && isSearching) // change condition to solving puzzle
