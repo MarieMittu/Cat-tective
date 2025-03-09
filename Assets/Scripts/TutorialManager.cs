@@ -182,6 +182,7 @@ public class TutorialManager : MonoBehaviour
         {
             tableAreaScript.closeBtn.SetActive(false);
             ShowNextTutorial(18, standardDelay);
+            tableSearchMarker.SetActive(false);
         }
 
         if (currentIndex == 18 && tableAreaScript.pickedEvidence)
@@ -195,7 +196,12 @@ public class TutorialManager : MonoBehaviour
             ShowNextTutorial(20, standardDelay);
         }
 
-            if (foundWatch)
+        if (currentIndex == 20 && FindObjectOfType<ScenesController>().inventory.activeInHierarchy)
+        {
+            ShowNextTutorial(21, standardDelay);
+        }
+
+        if (foundWatch)
         {
             FindObjectOfType<ScenesController>().ShowTimeTravelScene();
         }
