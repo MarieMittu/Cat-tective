@@ -64,6 +64,12 @@ public class CatMovement : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (isScared)
+        {
+            playerRigid.velocity = new Vector3(0, playerRigid.velocity.y, 0); // Prevent moving forward but allow gravity
+            return; // Skip movement logic
+        }
+
         Vector3 velocity = playerRigid.velocity; // Preserve current velocity
 
         if (isOnWall)
@@ -195,8 +201,9 @@ public class CatMovement : MonoBehaviour
         {
             isScared = true;
             TutorialManager.sharedInstance.isScared = true;
-            playerRigid.AddForce(jump * jumpForce, ForceMode.Impulse);
-            playerRigid.AddForce(jumpBack * jumpForce, ForceMode.Impulse);
+
+            Vector3 direction = (transform.position - other.transform.position).normalized;
+            playerRigid.AddForce(direction * 15.0f, ForceMode.Impulse);
         }
 
         if (other.gameObject.CompareTag("Search"))
@@ -251,6 +258,10 @@ public class CatMovement : MonoBehaviour
             }
         }
     }
+
+   
+
+
 
     // Update is called once per frame
     void Update()
