@@ -109,6 +109,11 @@ public class CatMovement : MonoBehaviour
                         velocity.x = transform.forward.x * walk_speed * Time.deltaTime;
                         velocity.z = transform.forward.z * walk_speed * Time.deltaTime;
                     }
+                    if (Input.GetKey(KeyCode.S))
+                    {
+                        velocity.x = -transform.forward.x * walkback_speed * Time.deltaTime;
+                        velocity.z = -transform.forward.z * walkback_speed * Time.deltaTime;
+                    }
                 }
                 
             }
@@ -366,18 +371,18 @@ public class CatMovement : MonoBehaviour
             walking = false;
             //steps1.SetActive(false);
         }
-        //if (Input.GetKeyDown(KeyCode.S))
-        //{
-        //    playerAnim.SetTrigger("walkback");
-        //    playerAnim.ResetTrigger("idle");
-        //    //steps1.SetActive(true);
-        //}
-        //if (Input.GetKeyUp(KeyCode.S))
-        //{
-        //    playerAnim.ResetTrigger("walkback");
-        //    playerAnim.SetTrigger("idle");
-        //    //steps1.SetActive(false);
-        //}
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            playerAnim.SetTrigger("Walk");
+            playerAnim.ResetTrigger("Idle");
+            //steps1.SetActive(true);
+        }
+        if (Input.GetKeyUp(KeyCode.S))
+        {
+            playerAnim.ResetTrigger("Walk");
+            playerAnim.SetTrigger("Idle");
+            //steps1.SetActive(false);
+        }
         if (Input.GetKey(KeyCode.A))
         {
             playerTrans.Rotate(0, -rotate_speed * Time.deltaTime, 0);

@@ -143,12 +143,13 @@ public class TutorialManager : MonoBehaviour
             investigationMarker.SetActive(true); //add to the marker img text press E
             investigationArea.SetActive(true);
             photoPart.SetActive(true);
-            areaScript.closeBtn.SetActive(false);
+            
         }
 
         if (currentIndex == 14 && isSearching) // change condition to solving puzzle
         {
             //areaScript.closeBtn.SetActive(true); //for later tutorial
+            areaScript.closeBtn.SetActive(false);
             ShowNextTutorial(15, standardDelay);
         }
 
