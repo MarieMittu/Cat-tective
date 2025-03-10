@@ -16,6 +16,7 @@ public class CatMovement : MonoBehaviour
     public float jumpForce = 2.0f;
     public bool isGrounded;
     public bool isOnWall;
+    private bool isVaulting = false;
     private bool isClimbing = false;
     private bool isSunDrunk = false;
     private bool isPlaying = false;
@@ -68,6 +69,7 @@ public class CatMovement : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (isVaulting) return;
         if (isScared)
         {
             playerRigid.velocity = new Vector3(0, playerRigid.velocity.y, 0); // Prevent moving forward but allow gravity
@@ -255,25 +257,50 @@ public class CatMovement : MonoBehaviour
         float time = 0;
         Vector3 startPos = transform.position;
         playerRigid.isKinematic = true;
+        isVaulting = true;
+
+        Collider playerCollider = GetComponent<Collider>();
+        Collider[] allColliders = FindObjectsOfType<Collider>();
+        foreach (var collider in allColliders)
+        {
+            if (collider != playerCollider)
+            {
+                Physics.IgnoreCollision(playerCollider, collider, true);  // Ignore collisions with all other colliders
+            }
+        }
 
         gizmoTargetPos = targetPos;
         showGizmo = true;
         Debug.Log("START LERP");
         while (time < duration)
         {
-            transform.position = Vector3.Lerp(startPos, targetPos, time / duration);
+            float lerpRatio = time / duration;
+            Vector3 lerpedPosition = Vector3.Lerp(startPos, targetPos, lerpRatio);
+
+            // Use Rigidbody to move the player while lerping
+            playerRigid.MovePosition(lerpedPosition);
             time += Time.deltaTime;
             yield return null;
         }
         Debug.Log("FINISH LERP");
-        transform.position = targetPos;
-        Invoke("UndoKinematic", 2f);
+        playerRigid.MovePosition(targetPos);
+        foreach (var collider in allColliders)
+        {
+            if (collider != playerCollider)
+            {
+                Physics.IgnoreCollision(playerCollider, collider, false);
+            }
+        }
+
+        Invoke("UndoKinematic", 0.2f);
         //showGizmo = false;
     }
 
     private void UndoKinematic()
     {
         playerRigid.isKinematic = false;
+        isVaulting = false;
+        showGizmo = false;
     }
 
     private void Vault()
@@ -282,7 +309,8 @@ public class CatMovement : MonoBehaviour
         {
             if (Physics.Raycast(firstHit.point + (catMainCam.transform.forward * catRadius * 0.5f) + (Vector3.up * 0.1f * catHeight), Vector3.down, out var secondHit, catHeight))
             {
-                StartCoroutine(LerpVault(secondHit.point, 1.0f));
+                isVaulting = true;
+                StartCoroutine(LerpVault(secondHit.point, 0.5f));
             }
         }
     }
@@ -302,6 +330,8 @@ public class CatMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (isVaulting) return;
+
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
 

@@ -83,7 +83,11 @@ public class AreaActions : MonoBehaviour
         {
             evidence.SetActive(false);
             pickedEvidence = true;
-            InventoryManager.instance?.AddEvidenceToInventory(evidence.name);
+
+            DraggableItem draggable = evidence.GetComponent<DraggableItem>();
+            string itemID = draggable != null ? draggable.itemID : evidence.name;
+
+            InventoryManager.instance?.AddEvidenceToInventory(evidence.name, itemID);
         }
     }
     

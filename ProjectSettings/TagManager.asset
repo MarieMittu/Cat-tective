@@ -12,6 +12,8 @@ TagManager:
   - Search
   - Top
   - Closet
+  - InventoryGrid
+  - ComboArea
   layers:
   - Default
   - TransparentFX

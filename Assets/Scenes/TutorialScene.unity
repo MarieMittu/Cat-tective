@@ -623,7 +623,7 @@ GameObject:
   - component: {fileID: 42659126}
   m_Layer: 5
   m_Name: ItemsHolder
-  m_TagString: Untagged
+  m_TagString: InventoryGrid
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6478,7 +6478,7 @@ CapsuleCollider:
   m_Radius: 0.49959293
   m_Height: 2.5266333
   m_Direction: 1
-  m_Center: {x: 0.036144845, y: -0.2471234, z: -0.021180008}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &900706719
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -8709,7 +8709,7 @@ GameObject:
   - component: {fileID: 1396980026}
   m_Layer: 5
   m_Name: ComboArea
-  m_TagString: Untagged
+  m_TagString: ComboArea
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -8746,7 +8746,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.5019608}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -10430,6 +10430,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemGridContent: {fileID: 1862383153}
   inventoryItemPrefab: {fileID: 6637431085883623474, guid: 2a944fc5e77b94795aac2f2694672b98, type: 3}
+  comboResultPrefab: {fileID: 6170831605457382295, guid: 065149caa6b8e43f88bc6dc8d9f7679d, type: 3}
   evidenceSpriteList:
   - evidenceName: photo1
     evidenceSprite: {fileID: 21300000, guid: 6fef50a53c2b345a4920b036132f0b3f, type: 3}
