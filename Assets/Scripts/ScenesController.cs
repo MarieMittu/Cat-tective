@@ -23,6 +23,7 @@ public class ScenesController : MonoBehaviour
 
     public void ShowTimeTravelScene()
     {
+        InventoryManager.instance.ClearInventory();
         SceneManager.LoadScene("TimeTravelCutScene");
         Cursor.lockState = CursorLockMode.Locked;
     }

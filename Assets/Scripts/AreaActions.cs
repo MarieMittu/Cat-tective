@@ -83,6 +83,7 @@ public class AreaActions : MonoBehaviour
         {
             evidence.SetActive(false);
             pickedEvidence = true;
+            InventoryManager.instance?.AddEvidenceToInventory(evidence.name);
         }
     }
     

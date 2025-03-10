@@ -10251,6 +10251,7 @@ GameObject:
   - component: {fileID: 1594509206}
   - component: {fileID: 1594509205}
   - component: {fileID: 1594509210}
+  - component: {fileID: 1594509211}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -10415,6 +10416,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inventory: {fileID: 61535305}
+--- !u!114 &1594509211
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1594509204}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78df5537fdb0c479fa1cad763c674243, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemGridContent: {fileID: 1862383153}
+  inventoryItemPrefab: {fileID: 6637431085883623474, guid: 2a944fc5e77b94795aac2f2694672b98, type: 3}
+  evidenceSpriteList:
+  - evidenceName: photo1
+    evidenceSprite: {fileID: 21300000, guid: 6fef50a53c2b345a4920b036132f0b3f, type: 3}
+  - evidenceName: photo2
+    evidenceSprite: {fileID: 21300000, guid: d4d705e27a73f42ee8b213f45f594873, type: 3}
 --- !u!1 &1599301950
 GameObject:
   m_ObjectHideFlags: 0
